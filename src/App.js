@@ -11,6 +11,9 @@ const settings = window.require("electron-settings");
 const { ipcRenderer } = window.require("electron");
 const fs = window.require("fs");
 
+// if you need to use react dev tools in election, run this:
+// require('electron-react-devtools').install()
+
 function App() {
   const [loadedFile, setLoadedFile] = useState("");
   const [directory, setDirectory] = useState(settings.get("directory") || null);
