@@ -18,6 +18,7 @@ function App() {
   const [loadedFile, setLoadedFile] = useState("");
   const [directory, setDirectory] = useState(settings.get("directory") || null);
   const [filesData, setFilesData] = useState([]);
+  const [activeIndex, setActiveIndex] = useState();
 
   useEffect(() => {
     const directory = settings.get("directory");
@@ -49,9 +50,26 @@ function App() {
     }
   }
 
+  function changeFile(index) {
+    if (index !== activeIndex) {
+      saveFile();
+      loadFile(index);
+    }
+  }
+
   function loadFile(index) {
     const content = fs.readFileSync(filesData[index].path).toString();
     setLoadedFile(content);
+    setActiveIndex(index);
+  }
+
+  function saveFile() {
+    if (activeIndex) {
+      fs.writeFile(filesData[activeIndex].path, loadedFile, err => {
+        if (err) return console.log(err);
+        console.log("saved!");
+      });
+    }
   }
 
   return (
@@ -61,7 +79,7 @@ function App() {
         <Split>
           <FilesWindow>
             {filesData.map((file, idx) => (
-              <button onClick={() => loadFile(idx)}>{file.path}</button>
+              <button onClick={() => changeFile(idx)}>{file.path}</button>
             ))}
           </FilesWindow>
           <CodeWindow>
