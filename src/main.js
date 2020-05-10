@@ -195,12 +195,7 @@ function openDir(mainWindow) {
     })
     .then(result => {
       const dir = result.filePaths[0];
-      fs.readdir(dir, (err, files) => {
-        const filteredFiles = files.filter(file => file.includes(".md"));
-        const filePaths = filteredFiles.map(file => `${dir}/${file}`);
-        // send directory content to renderer
-        mainWindow.webContents.send("new-dir", filePaths, dir);
-      });
+      mainWindow.webContents.send("new-dir", dir);
     })
     .catch(err => {
       console.log("error: ", err);
