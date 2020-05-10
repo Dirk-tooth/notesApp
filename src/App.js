@@ -7,11 +7,12 @@ import "brace/mode/markdown";
 import "brace/theme/dracula";
 import "./App.css";
 
+const settings = window.require("electron-settings");
 const { ipcRenderer } = window.require("electron");
 
 function App() {
   const [loadedFile, setLoadedFile] = useState("");
-  const [directory, setDirectory] = useState("");
+  const [directory, setDirectory] = useState(settings.get("directory") || null);
 
   useEffect(() => {
     ipcRenderer.on("new-file", (event, fileContent) => {
@@ -19,28 +20,36 @@ function App() {
     });
     ipcRenderer.on("new-dir", (event, filepaths, dir) => {
       setDirectory(dir);
+      settings.set("directory", dir);
     });
   });
 
   return (
     <div className="App">
       <Header>Journal</Header>
-      <Split>
-        <CodeWindow>
-          <AceEditor
-            mode="markdown"
-            theme="dracula"
-            onChange={newContent => {
-              setLoadedFile(newContent);
-            }}
-            name="markdown_editor"
-            value={loadedFile}
-          />
-        </CodeWindow>
-        <RenderedWindow>
-          <Markdown>{loadedFile}</Markdown>
-        </RenderedWindow>
-      </Split>
+      {directory ? (
+        <Split>
+          <CodeWindow>
+            <AceEditor
+              mode="markdown"
+              theme="dracula"
+              onChange={newContent => {
+                setLoadedFile(newContent);
+              }}
+              name="markdown_editor"
+              value={loadedFile}
+            />
+          </CodeWindow>
+          <RenderedWindow>
+            <Markdown>{loadedFile}</Markdown>
+          </RenderedWindow>
+        </Split>
+      ) : (
+        <LoadingMessage>
+          <h1>cmd + o to open a file</h1>
+          <h1>cmd + shift + o to open a directory</h1>
+        </LoadingMessage>
+      )}
     </div>
   );
 }
@@ -62,6 +71,16 @@ const Header = styled.header`
   -webkit-app-region: drag;
 `;
 
+const LoadingMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  background-color: #191324;
+  height: 100vh;
+`;
+
 const Split = styled.div`
   display: flex;
   height: 100vh;
@@ -79,6 +98,7 @@ const RenderedWindow = styled.div`
   padding: 20px;
   color: #ffffff;
   border-left: 1px solid #302b3a;
+  word-wrap: break-word:
   h1,
   h2,
   h3,
