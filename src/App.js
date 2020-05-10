@@ -11,8 +11,8 @@ const { ipcRenderer } = window.require("electron");
 
 function App() {
   const [loadedFile, setLoadedFile] = useState("");
-  const [directory, setDirectory useState("");
-  const [loadedFile, setLoadedFile] = useState("");
+  const [directory, setDirectory] = useState("");
+
   useEffect(() => {
     ipcRenderer.on("new-file", (event, fileContent) => {
       setLoadedFile(fileContent);
