@@ -33,7 +33,8 @@ function App() {
       settings.set("directory", directory);
       loadAndReadFiles(directory);
     });
-  });
+  }, []); // eslint-disable-line
+  //         ^ temporariliy band-aids being stuck on first file due to lines 46-48
 
   function loadAndReadFiles(directory) {
     fs.readdir(directory, (err, files) => {
@@ -43,18 +44,26 @@ function App() {
       }));
       setFilesData(filesData);
     });
+    if (filesData.length > 0) {
+      loadFile(0);
+    }
+  }
+
+  function loadFile(index) {
+    const content = fs.readFileSync(filesData[index].path).toString();
+    setLoadedFile(content);
   }
 
   return (
-    <div className="App">
+    <AppWrap>
       <Header>Journal</Header>
       {directory ? (
         <Split>
-          <div>
-            {filesData.map(file => (
-              <h1>{file.path}</h1>
+          <FilesWindow>
+            {filesData.map((file, idx) => (
+              <button onClick={() => loadFile(idx)}>{file.path}</button>
             ))}
-          </div>
+          </FilesWindow>
           <CodeWindow>
             <AceEditor
               mode="markdown"
@@ -85,11 +94,15 @@ function App() {
           </p>
         </LoadingMessage>
       )}
-    </div>
+    </AppWrap>
   );
 }
 
 export default App;
+
+const AppWrap = styled.div`
+  margin-top: 23px;
+`;
 
 const Header = styled.header`
   background-color: #191324;
@@ -123,6 +136,23 @@ const LoadingMessage = styled.div`
 const Split = styled.div`
   display: flex;
   height: 100vh;
+`;
+
+const FilesWindow = styled.div`
+background: #140f1d;
+border-right: solid 1px #302b3a;
+position: relitive;
+width: 20%;
+&:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  box-shadow: -10px 0 20px rgba(0, 0, 0, 0.3) inset;
+}
 `;
 
 const CodeWindow = styled.div`
