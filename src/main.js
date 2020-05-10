@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu } = require("electron");
+const { app, BrowserWindow, dialog, Menu } = require("electron");
 const path = require("path");
+const fs = require("fs");
 
 function createWindow() {
   // Create the browser window.
@@ -44,8 +45,14 @@ function createWindow() {
       label: "File",
       submenu: [
         isMac ? { role: "close" } : { role: "quit" },
-        { label: "Open Folder" },
-        { label: "Open File" }
+        {
+          label: "Open File",
+          accelerator: "CmdOrCtrl+O",
+          click() {
+            openFile(mainWindow);
+          }
+        },
+        { label: "Open Folder" }
       ]
     },
     // { role: 'editMenu' }
@@ -152,3 +159,28 @@ app.on("activate", function() {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+//Open File
+function openFile(mainWindow) {
+  // Open file dialog looking for markdown
+  const files = dialog
+    .showOpenDialog(mainWindow, {
+      properties: ["openFile"],
+      filters: [{ name: "Markdown", extensions: ["md", "markdown", "txt"] }]
+    })
+    .then(result => {
+      const file = result.filePaths[0];
+      const fileContent = fs.readFileSync(file).toString();
+      console.log(fileContent);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
+  // //if no files
+  // if (!files) return;
+  //
+  // const file = files[0];
+  // const fileContent = fs.readFileSync(file).toString();
+  // console.log(fileContent);
+}
