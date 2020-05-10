@@ -54,7 +54,13 @@ function createWindow() {
             openFile(mainWindow);
           }
         },
-        { label: "Open Folder" }
+        {
+          label: "Open Folder",
+          accelerator: "CmdOrCtrl+Shift+O",
+          click() {
+            openDir(mainWindow);
+          }
+        }
       ]
     },
     // { role: 'editMenu' }
@@ -167,8 +173,7 @@ function openFile(mainWindow) {
   // Open file dialog looking for markdown
   const files = dialog
     .showOpenDialog(mainWindow, {
-      properties: ["openFile"],
-      filters: [{ name: "Markdown", extensions: ["md", "markdown", "txt"] }]
+      properties: ["openFile"]
     })
     .then(result => {
       const file = result.filePaths[0];
@@ -178,5 +183,25 @@ function openFile(mainWindow) {
     })
     .catch(err => {
       console.log(err);
+    });
+}
+
+function openDir(mainWindow) {
+  // Open directory dialog looking for a directory
+  const directory = dialog
+    .showOpenDialog(mainWindow, {
+      properties: ["openDirectory"],
+      filters: [{ name: "Markdown", extensions: ["md", "markdown", "txt"] }]
+    })
+    .then(result => {
+      const dir = result.filePaths[0];
+      fs.readdir(dir, (err, files) => {
+        const filteredFiles = files.filter(file => file.includes(".md"));
+        const filePaths = filteredFiles.map(file => `${dir}/${file}`);
+        mainWindow.webContents.send("new-dir", filePaths, dir);
+      });
+    })
+    .catch(err => {
+      console.log("error: ", err);
     });
 }
