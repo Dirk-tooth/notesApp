@@ -1,8 +1,15 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import logo from "./logo.svg";
+import "./App.css";
+
+const { ipcRenderer } = window.require("electron");
 
 function App() {
+  useEffect(() => {
+    ipcRenderer.on("new-file", (event, fileContent) => {
+      console.log(fileContent);
+    });
+  });
   return (
     <div className="App">
       <header className="App-header">

@@ -9,7 +9,8 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js")
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true
     }
   });
 
@@ -171,16 +172,10 @@ function openFile(mainWindow) {
     .then(result => {
       const file = result.filePaths[0];
       const fileContent = fs.readFileSync(file).toString();
-      console.log(fileContent);
+      // send file content to renderer
+      mainWindow.webContents.send("new-file", fileContent);
     })
     .catch(err => {
       console.log(err);
     });
-
-  // //if no files
-  // if (!files) return;
-  //
-  // const file = files[0];
-  // const fileContent = fs.readFileSync(file).toString();
-  // console.log(fileContent);
 }
