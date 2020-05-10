@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Markdown from "markdown-to-jsx";
-import logo from "./logo.svg";
+import AceEditor from "react-ace";
+import brase from "brace";
+import "brace/mode/markdown";
+import "brace/theme/dracula";
 import "./App.css";
 
 const { ipcRenderer } = window.require("electron");
@@ -15,6 +18,15 @@ function App() {
 
   return (
     <div className="App">
+      <AceEditor
+        mode="markdown"
+        theme="dracula"
+        onChange={newContent => {
+          setLoadedFile(newContent);
+        }}
+        name="markdown_editor"
+        value={loadedFile}
+      />
       <Markdown>{loadedFile}</Markdown>
     </div>
   );
