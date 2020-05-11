@@ -34,9 +34,7 @@ function App() {
       settings.set("directory", directory);
       loadAndReadFiles(directory);
     });
-  }, []); // eslint-disable-line
-  //         ^ temporariliy band-aids being stuck on first file due to lines 46-48
-
+  });
   function loadAndReadFiles(directory) {
     fs.readdir(directory, (err, files) => {
       const filteredFiles = files.filter(file => file.includes(".md"));
@@ -45,16 +43,15 @@ function App() {
       }));
       setFilesData(filesData);
     });
-    if (filesData.length > 0) {
-      loadFile(0);
-    }
   }
 
   function changeFile(index) {
-    if (index !== activeIndex) {
-      saveFile();
-      loadFile(index);
-    }
+    console.log("---");
+    console.log(`saving`, index);
+    // if (index !== activeIndex) {
+    saveFile(index);
+    loadFile(index);
+    // }
   }
 
   function loadFile(index) {
@@ -63,8 +60,8 @@ function App() {
     setActiveIndex(index);
   }
 
-  function saveFile() {
-    if (activeIndex) {
+  function saveFile(index) {
+    if (activeIndex !== undefined) {
       fs.writeFile(filesData[activeIndex].path, loadedFile, err => {
         if (err) return console.log(err);
         console.log("saved!");
@@ -185,12 +182,14 @@ const RenderedWindow = styled.div`
   padding: 20px;
   color: #ffffff;
   border-left: 1px solid #302b3a;
-  word-wrap: break-word:
+  word-wrap: break-word;
+  overflow: auto;
   h1,
   h2,
   h3,
   h4,
-  h5, h6 {
+  h5,
+  h6 {
     color: #82d8d8;
   }
   h1 {
