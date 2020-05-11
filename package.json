@@ -1,13 +1,26 @@
 {
-  "name": "journal",
+  "name": "Jot",
+  "author": "Trevor Davis",
   "version": "0.1.0",
   "private": true,
+  "build": {
+    "appId": "com.dirktooth.jot",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "homepage": "./",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "brace": "^0.11.1",
     "date-fns": "^2.13.0",
+    "electron-is-dev": "^1.2.0",
     "electron-react-devtools": "^0.5.3",
     "electron-settings": "^3.2.0",
     "markdown-to-jsx": "^6.11.1",
@@ -17,10 +30,14 @@
     "react-scripts": "3.4.1",
     "styled-components": "^5.1.0"
   },
-  "main": "src/main.js",
+  "main": "public/electron.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "react-build": "react-scripts build",
+    "electron-build": "electron-builder",
+    "electron-pack": "build --em.main=build/electron.js",
+    "preelectron-pack": "yarn build",
+    "build": "yarn react-build && yarn electron-build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron ."
@@ -41,6 +58,7 @@
     ]
   },
   "devDependencies": {
-    "electron": "^8.2.5"
+    "electron": "^8.2.5",
+    "electron-builder": "^22.6.0"
   }
 }
