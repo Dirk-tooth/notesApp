@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Markdown from "markdown-to-jsx";
 import AceEditor from "react-ace";
 import brase from "brace";
+import { format } from "date-fns";
 import "brace/mode/markdown";
 import "brace/theme/dracula";
 import "./App.css";
@@ -38,27 +39,37 @@ function App() {
       saveFile();
     });
   });
+
   function loadAndReadFiles(directory) {
     fs.readdir(directory, (err, files) => {
       const filteredFiles = files.filter(file => file.includes(".md"));
       const filesData = filteredFiles.map(file => {
-        const date = file.substr(
-          file.indexOf("_") + 1,
-          file.indexOf(".") - file.indexOf("_") - 1
-        );
+        const date = file
+          .substr(
+            file.indexOf("_") + 1,
+            file.indexOf(".") - file.indexOf("_") - 1
+          )
+          .split("_");
         return {
           date,
           path: `${directory}/${file}`,
           title: file.substr(0, file.indexOf("_"))
         };
       });
+
+      filesData.sort((a, b) => {
+        const aDate = new Date(a.date);
+        const bDate = new Date(b.date);
+        const aSec = aDate.getTime();
+        const bSec = bDate.getTime();
+        return bSec - aSec;
+      });
+
       setFilesData(filesData);
     });
   }
 
   function changeFile(index) {
-    console.log("---");
-    console.log(`saving`, index);
     // if (index !== activeIndex) {
     saveFile(index);
     loadFile(index);
@@ -80,6 +91,10 @@ function App() {
     }
   }
 
+  function formatDate(date) {
+    return format(new Date(date), "MMMM do yyyy");
+  }
+
   return (
     <AppWrap>
       <Header>Journal</Header>
@@ -92,7 +107,7 @@ function App() {
                 onClick={() => changeFile(idx)}
               >
                 <p className="title">{file.title}</p>
-                <p className="date">{file.date}</p>
+                <p className="date">{formatDate(file.date)}</p>
               </FileButton>
             ))}
           </FilesWindow>
