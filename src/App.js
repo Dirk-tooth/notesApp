@@ -34,6 +34,9 @@ function App() {
       settings.set("directory", directory);
       loadAndReadFiles(directory);
     });
+    ipcRenderer.on("save-file", event => {
+      saveFile();
+    });
   });
   function loadAndReadFiles(directory) {
     fs.readdir(directory, (err, files) => {

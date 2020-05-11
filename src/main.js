@@ -60,6 +60,13 @@ function createWindow() {
           click() {
             openDir(mainWindow);
           }
+        },
+        {
+          label: "Save",
+          accelerator: "CmdOrCtrl+S",
+          click() {
+            mainWindow.webContents.send("save-file");
+          }
         }
       ]
     },
