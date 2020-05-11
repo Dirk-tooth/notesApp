@@ -79,7 +79,12 @@ function App() {
         <Split>
           <FilesWindow>
             {filesData.map((file, idx) => (
-              <button onClick={() => changeFile(idx)}>{file.path}</button>
+              <FileButton
+                active={activeIndex === idx}
+                onClick={() => changeFile(idx)}
+              >
+                {file.path}
+              </FileButton>
             ))}
           </FilesWindow>
           <CodeWindow>
@@ -202,4 +207,25 @@ const RenderedWindow = styled.div`
   a {
     color: #e54b4b;
   }
+`;
+
+const FileButton = styled.button`
+  padding: 10px;
+  width: 100%;
+  background: #191324;
+  opacity: 0.4;
+  color: #ffffff;
+  border: none;
+  border-bottom: solid 1px #302b3a;
+  transition: 0.3s ease all;
+  &:hover {
+    opacity: 1;
+    border-left: solid 4px #82d8d8;
+  }
+  ${({ active }) =>
+    active &&
+    `
+    opacity: 1;
+    border-left: solid 4px #82d8d8;
+  `}
 `;
