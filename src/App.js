@@ -20,6 +20,8 @@ function App() {
   const [directory, setDirectory] = useState(settings.get("directory") || null);
   const [filesData, setFilesData] = useState([]);
   const [activeIndex, setActiveIndex] = useState();
+  const [newEntry, setNewEntry] = useState(false);
+  const [newEntryName, setNewEntryName] = useState("");
 
   useEffect(() => {
     const directory = settings.get("directory");
@@ -44,12 +46,10 @@ function App() {
     fs.readdir(directory, (err, files) => {
       const filteredFiles = files.filter(file => file.includes(".md"));
       const filesData = filteredFiles.map(file => {
-        const date = file
-          .substr(
-            file.indexOf("_") + 1,
-            file.indexOf(".") - file.indexOf("_") - 1
-          )
-          .split("_");
+        const date = file.substr(
+          file.indexOf("_") + 1,
+          file.indexOf(".") - file.indexOf("_") - 1
+        );
         return {
           date,
           path: `${directory}/${file}`,
@@ -95,12 +95,44 @@ function App() {
     return format(new Date(date), "MMMM do yyyy");
   }
 
+  function newFile(e) {
+    e.preventDefault();
+    const fileDate = format(new Date(), "yyyy MM dd");
+    const filePath = `${directory}/${newEntryName}_${fileDate}.md`;
+    fs.writeFile(filePath, "", err => {
+      if (err) return console.log(err);
+      const tempFilesData = filesData;
+      tempFilesData.unshift({
+        path: filePath,
+        date: fileDate,
+        title: newEntryName
+      });
+      setNewEntry(false);
+      setNewEntryName("");
+      setLoadedFile("");
+      setFilesData(tempFilesData);
+    });
+  }
+
   return (
     <AppWrap>
       <Header>Journal</Header>
       {directory ? (
         <Split>
           <FilesWindow>
+            <Button onClick={() => setNewEntry(!newEntry)}>
+              {newEntry ? "Never mind..." : "+ New Entry"}
+            </Button>
+            {newEntry && (
+              <form onSubmit={e => newFile(e)}>
+                <input
+                  autoFocus
+                  onChange={e => setNewEntryName(e.target.value)}
+                  type="text"
+                  value={newEntryName}
+                />
+              </form>
+            )}
             {filesData.map((file, idx) => (
               <FileButton
                 active={activeIndex === idx}
@@ -260,5 +292,21 @@ const FileButton = styled.button`
   }
   .date {
     margin: 0;
+  }
+`;
+
+const Button = styled.button`
+  background: transparent;
+  color: #ffffff;
+  border: solid 1px #82d8d8;
+  border-radius: 4px;
+  display: block;
+  margin:1rem auto;
+  font-size: 1rem;
+  transition: 0.3s ease all;
+  padding: 5px 10px;
+  &:hover {
+    background: #82d8d8:
+    color: #191324;
   }
 `;
