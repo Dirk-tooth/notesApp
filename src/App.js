@@ -40,6 +40,9 @@ function App() {
     ipcRenderer.on("save-file", event => {
       saveFile();
     });
+    ipcRenderer.on("testing-stuff", event => {
+      console.log("testing-stuff");
+    });
   });
 
   function loadAndReadFiles(directory) {
@@ -70,10 +73,10 @@ function App() {
   }
 
   function changeFile(index) {
-    // if (index !== activeIndex) {
-    saveFile(index);
-    loadFile(index);
-    // }
+    if (index !== activeIndex) {
+      saveFile(index);
+      loadFile(index);
+    }
   }
 
   function loadFile(index) {
@@ -83,6 +86,7 @@ function App() {
   }
 
   function saveFile(index) {
+    console.log("saving!");
     if (activeIndex !== undefined) {
       fs.writeFile(filesData[activeIndex].path, loadedFile, err => {
         if (err) return console.log(err);
@@ -120,7 +124,10 @@ function App() {
       {directory ? (
         <Split>
           <FilesWindow>
-            <Button onClick={() => setNewEntry(!newEntry)}>
+            <Button
+              disabled={directory === null}
+              onClick={() => setNewEntry(!newEntry)}
+            >
               {newEntry ? "Never mind..." : "+ New Entry"}
             </Button>
             {newEntry && (

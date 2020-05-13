@@ -67,6 +67,13 @@ function createWindow() {
           }
         },
         {
+          label: "Test Stuff",
+          accelerator: "CmdOrCtrl+T",
+          click() {
+            mainWindow.webContents.send("testing-stuff");
+          }
+        },
+        {
           label: "Save",
           accelerator: "CmdOrCtrl+S",
           click() {
